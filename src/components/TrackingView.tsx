@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Phone, MessageCircle, Star, Clock, X, ChevronUp } from 'lucide-react';
 import { Specialist } from '@/types/specialist';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,8 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
     lat: 40.72, 
     lng: -74.01 
   });
-  const userPosition = { lat: 40.7128, lng: -74.006 };
+  
+  const userPosition = useMemo(() => ({ lat: 40.7128, lng: -74.006 }), []);
 
   // Calculate distance between two points (simplified)
   const calculateDistance = (pos1: { lat: number; lng: number }, pos2: { lat: number; lng: number }) => {

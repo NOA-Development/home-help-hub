@@ -31,15 +31,16 @@ async function takeScreenshots() {
 
   // Screenshot 2: Address input with map visible
   console.log('2. Capturing address input with map...');
-  const mapButton = page.locator('button').filter({ hasText: /map/i }).first();
-  if (await mapButton.count() > 0) {
-    await mapButton.click();
-    await page.waitForTimeout(1500);
+  const mapToggleButton = page.locator('button[type="button"]').filter({ has: page.locator('svg') }).first();
+  if (await mapToggleButton.count() > 0) {
+    await mapToggleButton.click();
+    await page.waitForTimeout(2000); // Wait for map to load
     await page.screenshot({ 
       path: path.join(screenshotsDir, '02-address-with-map.png'),
       fullPage: true 
     });
-    await mapButton.click(); // Close map
+    await mapToggleButton.click(); // Close map
+    await page.waitForTimeout(500);
   }
 
   // Screenshot 3: Enter address and search

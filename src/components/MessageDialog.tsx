@@ -39,6 +39,7 @@ const MessageDialog = ({ open, onOpenChange, specialist }: MessageDialogProps) =
         addSpecialistMessage("Hi! I'm heading to your location now. I'll be there shortly!");
       }, 1000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   useEffect(() => {
