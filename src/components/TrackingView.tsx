@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Phone, MessageCircle, Star, Clock, X, ChevronUp } from 'lucide-react';
 import { Specialist } from '@/types/specialist';
 import { Button } from '@/components/ui/button';
-import GoogleMapView from './GoogleMapView';
+import LeafletMapView from './LeafletMapView';
+import CallDialog from './CallDialog';
+import MessageDialog from './MessageDialog';
 
 interface TrackingViewProps {
   specialist: Specialist;
@@ -12,37 +14,67 @@ interface TrackingViewProps {
 const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
   const [eta, setEta] = useState(specialist.eta);
   const [expanded, setExpanded] = useState(false);
+  const [showCallDialog, setShowCallDialog] = useState(false);
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [specialistPosition, setSpecialistPosition] = useState({ 
+    lat: 40.72, 
+    lng: -74.01 
+  });
+  const userPosition = { lat: 40.7128, lng: -74.006 };
+
+  // Calculate distance between two points (simplified)
+  const calculateDistance = (pos1: { lat: number; lng: number }, pos2: { lat: number; lng: number }) => {
+    const latDiff = pos2.lat - pos1.lat;
+    const lngDiff = pos2.lng - pos1.lng;
+    return Math.sqrt(latDiff * latDiff + lngDiff * lngDiff);
+  };
 
   useEffect(() => {
-    // Countdown ETA
+    // Synchronize ETA with distance
     const interval = setInterval(() => {
-      setEta((prev) => (prev > 1 ? prev - 1 : prev));
-    }, 60000); // Update every minute
+      const distance = calculateDistance(specialistPosition, userPosition);
+      
+      // Update ETA based on distance (rough calculation)
+      const distanceInMeters = distance * 111000; // Convert to approximate meters
+      const speedMetersPerMinute = 50; // Slow walking/driving speed
+      const calculatedEta = Math.max(1, Math.ceil(distanceInMeters / speedMetersPerMinute));
+      
+      setEta(calculatedEta);
+      
+      // Update specialist position (move slowly towards user)
+      setSpecialistPosition((prev) => {
+        const newLat = prev.lat + (userPosition.lat - prev.lat) * 0.008;
+        const newLng = prev.lng + (userPosition.lng - prev.lng) * 0.008;
+        return { lat: newLat, lng: newLng };
+      });
+    }, 1000); // Update every second
+    
     return () => clearInterval(interval);
-  }, []);
+  }, [specialistPosition, userPosition]);
 
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
       {/* Map */}
       <div className="flex-1 relative">
-        <GoogleMapView 
+        <LeafletMapView 
           showSpecialist={true}
-          specialistPosition={{ lat: 40.72, lng: -74.01 }}
-          userPosition={{ lat: 40.7128, lng: -74.006 }}
+          specialistPosition={specialistPosition}
+          userPosition={userPosition}
+          height="100%"
         />
         
         {/* Cancel button */}
         <Button
           variant="map"
           size="icon"
-          className="absolute top-4 right-4 z-10"
+          className="absolute top-4 right-4 z-[1000]"
           onClick={onCancel}
         >
           <X className="w-5 h-5" />
         </Button>
 
         {/* ETA Badge */}
-        <div className="absolute top-4 left-4 z-10">
+        <div className="absolute top-4 left-4 z-[1000]">
           <div className="bg-card rounded-xl shadow-card border border-border px-4 py-3 animate-scale-in">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
@@ -110,17 +142,41 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
 
           {/* Action buttons */}
           <div className="flex gap-4">
-            <Button variant="call" size="xl" className="flex-1">
+            <Button 
+              variant="call" 
+              size="xl" 
+              className="flex-1"
+              onClick={() => setShowCallDialog(true)}
+            >
               <Phone className="w-5 h-5 mr-2" />
               Call
             </Button>
-            <Button variant="message" size="xl" className="flex-1">
+            <Button 
+              variant="message" 
+              size="xl" 
+              className="flex-1"
+              onClick={() => setShowMessageDialog(true)}
+            >
               <MessageCircle className="w-5 h-5 mr-2" />
               Message
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Call Dialog */}
+      <CallDialog
+        open={showCallDialog}
+        onOpenChange={setShowCallDialog}
+        specialist={specialist}
+      />
+
+      {/* Message Dialog */}
+      <MessageDialog
+        open={showMessageDialog}
+        onOpenChange={setShowMessageDialog}
+        specialist={specialist}
+      />
     </div>
   );
 };
