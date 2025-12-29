@@ -6,7 +6,7 @@ import AddressInput from '@/components/AddressInput';
 import SearchingAnimation from '@/components/SearchingAnimation';
 import SpecialistList from '@/components/SpecialistList';
 import TrackingView from '@/components/TrackingView';
-import GoogleMapView from '@/components/GoogleMapView';
+import LeafletMapView from '@/components/LeafletMapView';
 
 const Index = () => {
   const [state, setState] = useState<AppState>('address');
@@ -62,7 +62,7 @@ const Index = () => {
         {/* Map background for non-address states */}
         {state !== 'address' && (
           <div className="mb-6 h-48 md:h-64 rounded-2xl overflow-hidden shadow-card animate-fade-in">
-            <GoogleMapView showSpecialist={false} />
+            <LeafletMapView showSpecialist={false} height="100%" />
           </div>
         )}
 
