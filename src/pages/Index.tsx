@@ -58,23 +58,23 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header state={state} address={address} onBack={handleBack} />
       
-      <main className="container px-4 py-6">
+      <main className="container px-4 py-6 max-w-7xl mx-auto">
         {/* Map background for non-address states */}
         {state !== 'address' && (
-          <div className="mb-6 h-48 md:h-64 rounded-2xl overflow-hidden shadow-card animate-fade-in">
+          <div className="mb-6 h-48 md:h-64 lg:h-80 rounded-2xl overflow-hidden shadow-card animate-fade-in max-w-4xl mx-auto">
             <LeafletMapView showSpecialist={false} height="100%" />
           </div>
         )}
 
         {/* Address input state */}
         {state === 'address' && (
-          <div className="pt-8 md:pt-16">
+          <div className="pt-8 md:pt-16 max-w-2xl mx-auto">
             <div className="text-center mb-8 animate-fade-in">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3">
                 Home Services,<br />
                 <span className="text-primary">On Demand</span>
               </h1>
-              <p className="text-muted-foreground max-w-sm mx-auto">
+              <p className="text-muted-foreground max-w-sm mx-auto text-base md:text-lg">
                 Find trusted specialists for plumbing, electrical, cleaning, gardening, and more.
               </p>
             </div>
@@ -102,14 +102,20 @@ const Index = () => {
         )}
 
         {/* Searching state */}
-        {state === 'searching' && <SearchingAnimation />}
+        {state === 'searching' && (
+          <div className="max-w-2xl mx-auto">
+            <SearchingAnimation />
+          </div>
+        )}
 
         {/* Specialists list state */}
         {state === 'specialists' && (
-          <SpecialistList 
-            specialists={mockSpecialists} 
-            onSelectSpecialist={handleSelectSpecialist} 
-          />
+          <div className="max-w-4xl mx-auto">
+            <SpecialistList 
+              specialists={mockSpecialists} 
+              onSelectSpecialist={handleSelectSpecialist} 
+            />
+          </div>
         )}
       </main>
     </div>

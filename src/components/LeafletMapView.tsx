@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -76,12 +76,54 @@ const createSpecialistIcon = () => {
   });
 };
 
-// Component to handle map updates
-const MapUpdater = ({ center, zoom }: { center: [number, number]; zoom: number }) => {
+// Component to fit bounds to show both user and specialist
+const MapBoundsFitter = ({ 
+  userPosition, 
+  specialistPosition,
+  showSpecialist 
+}: { 
+  userPosition: { lat: number; lng: number }; 
+  specialistPosition: { lat: number; lng: number };
+  showSpecialist: boolean;
+}) => {
   const map = useMap();
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const boundsRef = useRef<L.LatLngBounds | null>(null);
+
   useEffect(() => {
-    map.setView(center, zoom);
-  }, [center, zoom, map]);
+    // Track user interactions (zoom, drag)
+    const handleInteraction = () => setHasUserInteracted(true);
+    map.on('zoomstart', handleInteraction);
+    map.on('dragstart', handleInteraction);
+    
+    return () => {
+      map.off('zoomstart', handleInteraction);
+      map.off('dragstart', handleInteraction);
+    };
+  }, [map]);
+
+  useEffect(() => {
+    // Only auto-fit bounds if user hasn't manually interacted with the map
+    if (!hasUserInteracted && showSpecialist) {
+      const bounds = L.latLngBounds(
+        [userPosition.lat, userPosition.lng],
+        [specialistPosition.lat, specialistPosition.lng]
+      );
+      
+      // Only update if bounds have changed significantly
+      const currentBounds = boundsRef.current;
+      if (!currentBounds || !bounds.equals(currentBounds)) {
+        boundsRef.current = bounds;
+        map.fitBounds(bounds, { 
+          padding: [50, 50],
+          maxZoom: 15,
+          animate: true,
+          duration: 0.5
+        });
+      }
+    }
+  }, [userPosition, specialistPosition, showSpecialist, hasUserInteracted, map]);
+
   return null;
 };
 
@@ -162,7 +204,14 @@ const LeafletMapView = ({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        <MapUpdater center={[userPos.lat, userPos.lng]} zoom={14} />
+        {/* Fit bounds to show both user and specialist */}
+        {showSpecialist && (
+          <MapBoundsFitter 
+            userPosition={userPos} 
+            specialistPosition={specialistPos}
+            showSpecialist={showSpecialist}
+          />
+        )}
         
         {/* User marker */}
         <Marker position={[userPos.lat, userPos.lng]} icon={createUserIcon()} />
