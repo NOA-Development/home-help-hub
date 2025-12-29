@@ -38,16 +38,15 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
   useEffect(() => {
     // Synchronize ETA with distance
     const interval = setInterval(() => {
-      const distance = calculateDistance(specialistPosition, userPosition);
-      
-      // Update ETA based on distance (rough calculation)
-      const distanceInMeters = distance * METERS_PER_DEGREE;
-      const calculatedEta = Math.max(1, Math.ceil(distanceInMeters / SPEED_METERS_PER_MINUTE));
-      
-      setEta(calculatedEta);
-      
-      // Update specialist position (move slowly towards user)
       setSpecialistPosition((prev) => {
+        const distance = calculateDistance(prev, userPosition);
+        
+        // Update ETA based on distance (rough calculation)
+        const distanceInMeters = distance * METERS_PER_DEGREE;
+        const calculatedEta = Math.max(1, Math.ceil(distanceInMeters / SPEED_METERS_PER_MINUTE));
+        setEta(calculatedEta);
+        
+        // Update specialist position (move slowly towards user)
         const newLat = prev.lat + (userPosition.lat - prev.lat) * 0.008;
         const newLng = prev.lng + (userPosition.lng - prev.lng) * 0.008;
         return { lat: newLat, lng: newLng };
@@ -55,7 +54,7 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
     }, ETA_UPDATE_INTERVAL_MS);
     
     return () => clearInterval(interval);
-  }, [specialistPosition, userPosition]);
+  }, [userPosition]);
 
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
