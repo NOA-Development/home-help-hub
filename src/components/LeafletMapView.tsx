@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin, Navigation } from 'lucide-react';
@@ -87,13 +87,11 @@ const MapBoundsFitter = ({
   const map = useMap();
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const boundsRef = useRef<L.LatLngBounds | null>(null);
-  const lastInteractionRef = useRef<number>(0);
 
   useEffect(() => {
     // Track user interactions (zoom, drag)
     const handleInteraction = () => {
       setHasUserInteracted(true);
-      lastInteractionRef.current = Date.now();
     };
     map.on('zoomstart', handleInteraction);
     map.on('dragstart', handleInteraction);
@@ -105,18 +103,7 @@ const MapBoundsFitter = ({
   }, [map]);
 
   useEffect(() => {
-    // Reset user interaction flag after 10 seconds of inactivity
-    // This allows auto-fitting again if positions change significantly
-    if (hasUserInteracted) {
-      const timeSinceInteraction = Date.now() - lastInteractionRef.current;
-      if (timeSinceInteraction > 10000) {
-        setHasUserInteracted(false);
-      }
-    }
-  }, [userPosition, specialistPosition, hasUserInteracted]);
-
-  useEffect(() => {
-    // Only auto-fit bounds if user hasn't manually interacted with the map recently
+    // Only auto-fit bounds if user hasn't manually interacted with the map
     if (!hasUserInteracted) {
       const bounds = L.latLngBounds(
         [userPosition.lat, userPosition.lng],
@@ -222,6 +209,24 @@ const LeafletMapView = ({
           <MapBoundsFitter 
             userPosition={userPos} 
             specialistPosition={specialistPos}
+          />
+        )}
+        
+        {/* Route line from specialist to user */}
+        {showSpecialist && (
+          <Polyline 
+            positions={[
+              [specialistPos.lat, specialistPos.lng],
+              [userPos.lat, userPos.lng]
+            ]}
+            pathOptions={{
+              color: '#6366f1',
+              weight: 3,
+              opacity: 0.7,
+              dashArray: '10, 10',
+              lineCap: 'round',
+              lineJoin: 'round'
+            }}
           />
         )}
         
