@@ -79,20 +79,22 @@ const createSpecialistIcon = () => {
 // Component to fit bounds to show both user and specialist
 const MapBoundsFitter = ({ 
   userPosition, 
-  specialistPosition,
-  showSpecialist 
+  specialistPosition
 }: { 
   userPosition: { lat: number; lng: number }; 
   specialistPosition: { lat: number; lng: number };
-  showSpecialist: boolean;
 }) => {
   const map = useMap();
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const boundsRef = useRef<L.LatLngBounds | null>(null);
+  const lastInteractionRef = useRef<number>(0);
 
   useEffect(() => {
     // Track user interactions (zoom, drag)
-    const handleInteraction = () => setHasUserInteracted(true);
+    const handleInteraction = () => {
+      setHasUserInteracted(true);
+      lastInteractionRef.current = Date.now();
+    };
     map.on('zoomstart', handleInteraction);
     map.on('dragstart', handleInteraction);
     
@@ -103,8 +105,19 @@ const MapBoundsFitter = ({
   }, [map]);
 
   useEffect(() => {
-    // Only auto-fit bounds if user hasn't manually interacted with the map
-    if (!hasUserInteracted && showSpecialist) {
+    // Reset user interaction flag after 10 seconds of inactivity
+    // This allows auto-fitting again if positions change significantly
+    if (hasUserInteracted) {
+      const timeSinceInteraction = Date.now() - lastInteractionRef.current;
+      if (timeSinceInteraction > 10000) {
+        setHasUserInteracted(false);
+      }
+    }
+  }, [userPosition, specialistPosition, hasUserInteracted]);
+
+  useEffect(() => {
+    // Only auto-fit bounds if user hasn't manually interacted with the map recently
+    if (!hasUserInteracted) {
       const bounds = L.latLngBounds(
         [userPosition.lat, userPosition.lng],
         [specialistPosition.lat, specialistPosition.lng]
@@ -122,7 +135,7 @@ const MapBoundsFitter = ({
         });
       }
     }
-  }, [userPosition, specialistPosition, showSpecialist, hasUserInteracted, map]);
+  }, [userPosition, specialistPosition, hasUserInteracted, map]);
 
   return null;
 };
@@ -209,7 +222,6 @@ const LeafletMapView = ({
           <MapBoundsFitter 
             userPosition={userPos} 
             specialistPosition={specialistPos}
-            showSpecialist={showSpecialist}
           />
         )}
         
