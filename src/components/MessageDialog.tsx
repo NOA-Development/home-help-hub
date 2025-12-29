@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Specialist } from '@/types/specialist';
 
+// Constants
+const MIN_TYPING_DELAY_MS = 1500;
+const MAX_TYPING_DELAY_MS = 3000;
+
 interface Message {
   id: string;
   text: string;
@@ -79,7 +83,7 @@ const MessageDialog = ({ open, onOpenChange, specialist }: MessageDialogProps) =
     setTimeout(() => {
       const randomReply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
       addSpecialistMessage(randomReply);
-    }, 1500 + Math.random() * 1500);
+    }, MIN_TYPING_DELAY_MS + Math.random() * (MAX_TYPING_DELAY_MS - MIN_TYPING_DELAY_MS));
   };
 
   const formatTime = (date: Date) => {

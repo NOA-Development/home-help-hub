@@ -4,6 +4,10 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin, Navigation } from 'lucide-react';
 
+// Constants
+const SPECIALIST_MOVEMENT_SPEED = 0.008; // 0.8% movement per update
+const UPDATE_INTERVAL_MS = 100;
+
 // Fix for default marker icons in Leaflet
 const iconDefaults = L.Icon.Default.prototype as unknown as {
   _getIconUrl?: () => string;
@@ -103,13 +107,13 @@ const AnimatedSpecialistMarker = ({
           return prev;
         }
         
-        // Move slowly towards target (0.8% per update)
+        // Move slowly towards target
         return {
-          lat: prev.lat + latDiff * 0.008,
-          lng: prev.lng + lngDiff * 0.008,
+          lat: prev.lat + latDiff * SPECIALIST_MOVEMENT_SPEED,
+          lng: prev.lng + lngDiff * SPECIALIST_MOVEMENT_SPEED,
         };
       });
-    }, 100);
+    }, UPDATE_INTERVAL_MS);
     
     return () => clearInterval(interval);
   }, [targetPosition]);

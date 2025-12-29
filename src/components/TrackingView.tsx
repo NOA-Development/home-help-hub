@@ -11,6 +11,11 @@ interface TrackingViewProps {
   onCancel: () => void;
 }
 
+// Constants for ETA calculation
+const METERS_PER_DEGREE = 111000; // Approximate meters per degree of latitude
+const SPEED_METERS_PER_MINUTE = 50; // Slow walking/driving speed
+const ETA_UPDATE_INTERVAL_MS = 1000; // Update every second
+
 const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
   const [eta, setEta] = useState(specialist.eta);
   const [expanded, setExpanded] = useState(false);
@@ -36,9 +41,8 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
       const distance = calculateDistance(specialistPosition, userPosition);
       
       // Update ETA based on distance (rough calculation)
-      const distanceInMeters = distance * 111000; // Convert to approximate meters
-      const speedMetersPerMinute = 50; // Slow walking/driving speed
-      const calculatedEta = Math.max(1, Math.ceil(distanceInMeters / speedMetersPerMinute));
+      const distanceInMeters = distance * METERS_PER_DEGREE;
+      const calculatedEta = Math.max(1, Math.ceil(distanceInMeters / SPEED_METERS_PER_MINUTE));
       
       setEta(calculatedEta);
       
@@ -48,7 +52,7 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
         const newLng = prev.lng + (userPosition.lng - prev.lng) * 0.008;
         return { lat: newLat, lng: newLng };
       });
-    }, 1000); // Update every second
+    }, ETA_UPDATE_INTERVAL_MS);
     
     return () => clearInterval(interval);
   }, [specialistPosition, userPosition]);
