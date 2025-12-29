@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Phone, MessageCircle, Star, Clock, X, ChevronUp } from 'lucide-react';
 import { Specialist } from '@/types/specialist';
 import { Button } from '@/components/ui/button';
-import MapView from './MapView';
+import GoogleMapView from './GoogleMapView';
 
 interface TrackingViewProps {
   specialist: Specialist;
@@ -25,10 +25,10 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
       {/* Map */}
       <div className="flex-1 relative">
-        <MapView 
+        <GoogleMapView 
           showSpecialist={true}
-          specialistPosition={{ x: 25, y: 35 }}
-          userPosition={{ x: 70, y: 60 }}
+          specialistPosition={{ lat: 40.72, lng: -74.01 }}
+          userPosition={{ lat: 40.7128, lng: -74.006 }}
         />
         
         {/* Cancel button */}
