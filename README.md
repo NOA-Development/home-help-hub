@@ -1,73 +1,166 @@
-# Welcome to your Lovable project
+# Home Help Hub
 
-## Project info
+A modern web application connecting users with home service specialists. Find, track, and communicate with service professionals in real-time.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+**🚀 Live Demo**: [https://home-help-hub.vercel.app](https://home-help-hub.vercel.app)
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- 🔍 **Service Discovery** - Browse and search for home service specialists
+- 🗺️ **Interactive Maps** - Real-time specialist tracking with Leaflet/OpenStreetMap
+- 💬 **Communication** - In-app calling and messaging
+- 📍 **Location Selection** - Click on map or enter address
+- ⏱️ **Live ETA** - Synchronized with specialist movement
+- 📱 **Responsive** - Mobile-first design
 
-**Use Lovable**
+## Quick Start
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+```bash
+# Install dependencies
+npm install
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run linter
+npm run lint
 ```
 
-**Edit a file directly in GitHub**
+## Technology Stack
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **Frontend**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **UI Components**: shadcn-ui + Radix UI
+- **Styling**: Tailwind CSS
+- **Maps**: Leaflet + OpenStreetMap (free, no API key required)
+- **State Management**: React hooks + Tanstack Query
+- **Testing**: Playwright for E2E
 
-**Use GitHub Codespaces**
+## Architecture
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```mermaid
+graph TB
+    subgraph "User Interface Layer"
+        A[Pages] --> B[Components]
+        B --> C[UI Components<br/>shadcn-ui]
+    end
+    
+    subgraph "State & Logic Layer"
+        B --> D[React Hooks]
+        D --> E[Tanstack Query]
+    end
+    
+    subgraph "Feature Modules"
+        B --> F[Map Integration<br/>Leaflet]
+        B --> G[Communication<br/>Call & Message]
+        B --> H[Service Discovery]
+    end
+    
+    subgraph "External Services"
+        F --> I[OpenStreetMap<br/>Free Tiles]
+    end
+    
+    style A fill:#4F46E5
+    style B fill:#7C3AED
+    style F fill:#059669
+    style G fill:#059669
+    style H fill:#059669
+```
 
-## What technologies are used for this project?
+## Application Flow
 
-This project is built with:
+```mermaid
+sequenceDiagram
+    participant User
+    participant App
+    participant Map
+    participant Specialist
+    
+    User->>App: Enter Address/Select on Map
+    App->>Map: Display Location
+    User->>App: Search for Specialists
+    App->>User: Show Available Specialists
+    User->>App: Select Specialist
+    App->>Map: Initialize Tracking
+    loop Real-time Updates
+        Specialist->>Map: Update Position
+        Map->>User: Show Movement & ETA
+    end
+    User->>App: Call/Message Specialist
+    App->>User: Communication Interface
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Project Structure
 
-## How can I deploy this project?
+```
+home-help-hub/
+├── docs/                    # Documentation (docs-as-code)
+│   ├── screenshots/         # UI screenshots
+│   ├── FINAL_SUMMARY.md     # Project summary
+│   └── IMPLEMENTATION_SUMMARY.md
+├── utils/                   # Helper utilities
+│   └── take-screenshots.ts  # Playwright automation
+├── src/
+│   ├── components/          # React components
+│   │   ├── LeafletMapView.tsx
+│   │   ├── CallDialog.tsx
+│   │   └── MessageDialog.tsx
+│   ├── pages/               # Page components
+│   └── lib/                 # Utility libraries
+└── public/                  # Static assets
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Key Technical Decisions
 
-## Can I connect a custom domain to my Lovable project?
+### Why Leaflet over Google Maps?
+- ✅ Free and open-source
+- ✅ No API key required
+- ✅ No rate limits or usage costs
+- ✅ Smaller bundle size
+- ✅ Offline support with cached tiles
 
-Yes, you can!
+### Component Architecture
+- Functional components with React hooks
+- TypeScript strict mode for type safety
+- Reusable UI components from shadcn-ui
+- Tailwind CSS for consistent styling
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Development Guidelines
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+See [/.github/agents/](/.github/agents/) for detailed guidelines:
+- `rules.md` - Repository conventions
+- `instructions.md` - Agent guidelines
+- `repository-agent.md` - Repository overview
+
+Key principles:
+- 📚 Documentation in `/docs`
+- 🛠️ Utilities in `/utils`
+- 🧹 Keep root directory clean
+- 🎨 Follow existing design patterns
+- 🔒 No secrets in code
+
+## Documentation
+
+Comprehensive documentation available in `/docs`:
+- Implementation details
+- Technical specifications
+- Feature screenshots
+- Architecture decisions
+
+## Contributing
+
+1. Follow the project conventions in `/.github/agents/rules.md`
+2. Keep changes focused and minimal
+3. Update documentation when needed
+4. Run linter before committing
+5. Test changes thoroughly
+
+## License
+
+[Add your license here]

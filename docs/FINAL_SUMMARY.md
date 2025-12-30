@@ -120,8 +120,8 @@
 - `src/components/LeafletMapView.tsx` (155 lines) - Main map component
 - `src/components/CallDialog.tsx` (138 lines) - Call interface
 - `src/components/MessageDialog.tsx` (153 lines) - Chat interface
-- `take-screenshots.ts` (142 lines) - Playwright automation
-- `screenshots/` (11 PNG files + README)
+- `utils/take-screenshots.ts` (142 lines) - Playwright automation
+- `docs/screenshots/` (11 PNG files + README)
 - `IMPLEMENTATION_SUMMARY.md` - Technical documentation
 - `FINAL_SUMMARY.md` - This file
 
@@ -203,7 +203,7 @@ This implementation **exceeds all requirements** specified in the problem statem
 
 ## Next Steps for Client
 
-1. Review the 11 screenshots in `/screenshots/` directory
+1. Review the 11 screenshots in `/docs/screenshots/` directory
 2. Test the live demo at the dev server
 3. Provide feedback or approve for demo
 4. No further development needed - ready to showcase!
