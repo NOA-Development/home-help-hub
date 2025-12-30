@@ -3,6 +3,7 @@ import { ArrowUpDown, Star, Clock, Briefcase } from 'lucide-react';
 import { Specialist } from '@/types/specialist';
 import SpecialistCard from './SpecialistCard';
 import { Button } from '@/components/ui/button';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SpecialistListProps {
   specialists: Specialist[];
@@ -36,9 +37,19 @@ const SpecialistList = ({ specialists, onSelectSpecialist }: SpecialistListProps
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto animate-slide-up">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-md mx-auto"
+    >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 px-1">
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1 }}
+        className="flex items-center justify-between mb-4 px-1"
+      >
         <div>
           <h2 className="text-lg font-semibold text-foreground">Available Specialists</h2>
           <p className="text-sm text-muted-foreground">{specialists.length} found near you</p>
@@ -46,33 +57,53 @@ const SpecialistList = ({ specialists, onSelectSpecialist }: SpecialistListProps
         <div className="flex items-center gap-1">
           <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
         </div>
-      </div>
+      </motion.div>
 
       {/* Sort options */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
-        {sortOptions.map((option) => (
-          <Button
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide"
+      >
+        {sortOptions.map((option, index) => (
+          <motion.div
             key={option.value}
-            variant={sortBy === option.value ? 'default' : 'secondary'}
-            size="sm"
-            className="flex-shrink-0 gap-1.5"
-            onClick={() => setSortBy(option.value)}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 + index * 0.05 }}
           >
-            {option.icon}
-            {option.label}
-          </Button>
+            <Button
+              variant={sortBy === option.value ? 'default' : 'secondary'}
+              size="sm"
+              className="flex-shrink-0 gap-1.5"
+              onClick={() => setSortBy(option.value)}
+            >
+              {option.icon}
+              {option.label}
+            </Button>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* List */}
       <div className="space-y-3">
-        {sortedSpecialists.map((specialist, index) => (
-          <div key={specialist.id} style={{ animationDelay: `${index * 0.1}s` }}>
-            <SpecialistCard specialist={specialist} onSelect={onSelectSpecialist} />
-          </div>
-        ))}
+        <AnimatePresence mode="popLayout">
+          {sortedSpecialists.map((specialist, index) => (
+            <motion.div
+              key={specialist.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ delay: index * 0.1, duration: 0.3 }}
+              layout
+            >
+              <SpecialistCard specialist={specialist} onSelect={onSelectSpecialist} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
