@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { MapContainer, TileLayer, Marker, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin, Navigation } from 'lucide-react';
@@ -76,12 +76,54 @@ const createSpecialistIcon = () => {
   });
 };
 
-// Component to handle map updates
-const MapUpdater = ({ center, zoom }: { center: [number, number]; zoom: number }) => {
+// Component to fit bounds to show both user and specialist
+const MapBoundsFitter = ({ 
+  userPosition, 
+  specialistPosition
+}: { 
+  userPosition: { lat: number; lng: number }; 
+  specialistPosition: { lat: number; lng: number };
+}) => {
   const map = useMap();
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const boundsRef = useRef<L.LatLngBounds | null>(null);
+
   useEffect(() => {
-    map.setView(center, zoom);
-  }, [center, zoom, map]);
+    // Track user interactions (zoom, drag)
+    const handleInteraction = () => {
+      setHasUserInteracted(true);
+    };
+    map.on('zoomstart', handleInteraction);
+    map.on('dragstart', handleInteraction);
+    
+    return () => {
+      map.off('zoomstart', handleInteraction);
+      map.off('dragstart', handleInteraction);
+    };
+  }, [map]);
+
+  useEffect(() => {
+    // Only auto-fit bounds if user hasn't manually interacted with the map
+    if (!hasUserInteracted) {
+      const bounds = L.latLngBounds(
+        [userPosition.lat, userPosition.lng],
+        [specialistPosition.lat, specialistPosition.lng]
+      );
+      
+      // Only update if bounds have changed significantly
+      const currentBounds = boundsRef.current;
+      if (!currentBounds || !bounds.equals(currentBounds)) {
+        boundsRef.current = bounds;
+        map.fitBounds(bounds, { 
+          padding: [50, 50],
+          maxZoom: 15,
+          animate: true,
+          duration: 0.5
+        });
+      }
+    }
+  }, [userPosition, specialistPosition, hasUserInteracted, map]);
+
   return null;
 };
 
@@ -162,7 +204,31 @@ const LeafletMapView = ({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        <MapUpdater center={[userPos.lat, userPos.lng]} zoom={14} />
+        {/* Fit bounds to show both user and specialist */}
+        {showSpecialist && (
+          <MapBoundsFitter 
+            userPosition={userPos} 
+            specialistPosition={specialistPos}
+          />
+        )}
+        
+        {/* Route line from specialist to user */}
+        {showSpecialist && (
+          <Polyline 
+            positions={[
+              [specialistPos.lat, specialistPos.lng],
+              [userPos.lat, userPos.lng]
+            ]}
+            pathOptions={{
+              color: '#6366f1',
+              weight: 3,
+              opacity: 0.7,
+              dashArray: '10, 10',
+              lineCap: 'round',
+              lineJoin: 'round'
+            }}
+          />
+        )}
         
         {/* User marker */}
         <Marker position={[userPos.lat, userPos.lng]} icon={createUserIcon()} />

@@ -77,8 +77,8 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
           <X className="w-5 h-5" />
         </Button>
 
-        {/* ETA Badge */}
-        <div className="absolute top-4 left-4 z-[1000]">
+        {/* ETA Badge - Moved to bottom-right */}
+        <div className="absolute bottom-4 right-4 z-[1000]">
           <div className="bg-card rounded-xl shadow-card border border-border px-4 py-3 animate-scale-in">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
@@ -93,11 +93,11 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
         </div>
       </div>
 
-      {/* Bottom sheet */}
+      {/* Bottom sheet - Improved for desktop */}
       <div 
         className={`bg-card rounded-t-3xl shadow-xl border-t border-border transition-all duration-300 ${
-          expanded ? 'h-[60%]' : 'h-auto'
-        }`}
+          expanded ? 'h-[60%] md:h-[50%]' : 'h-auto'
+        } max-w-screen-lg mx-auto w-full`}
       >
         {/* Handle */}
         <button 
