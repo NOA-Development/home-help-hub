@@ -27,6 +27,7 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
     lng: -74.01 
   });
   const [distance, setDistance] = useState(specialist.distance);
+  const [lastEta, setLastEta] = useState(specialist.eta);
   
   const userPosition = useMemo(() => ({ lat: 40.7128, lng: -74.006 }), []);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -41,7 +42,7 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
 
   useEffect(() => {
     // Animate card entrance on desktop
-    if (cardRef.current && window.innerWidth >= 768) {
+    if (cardRef.current) {
       gsap.fromTo(
         cardRef.current,
         { x: 50, opacity: 0 },
@@ -61,13 +62,14 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
         const calculatedEta = Math.max(1, Math.ceil(distanceInMeters / SPEED_METERS_PER_MINUTE));
         const calculatedDistance = (distanceInMeters / 1000).toFixed(1);
         
-        // Animate ETA change
-        if (etaRef.current && calculatedEta !== eta) {
+        // Only animate ETA change if value actually changed
+        if (calculatedEta !== lastEta && etaRef.current) {
           gsap.fromTo(
             etaRef.current,
             { scale: 1.1, opacity: 0.7 },
             { scale: 1, opacity: 1, duration: 0.3 }
           );
+          setLastEta(calculatedEta);
         }
         
         setEta(calculatedEta);
@@ -81,7 +83,7 @@ const TrackingView = ({ specialist, onCancel }: TrackingViewProps) => {
     }, ETA_UPDATE_INTERVAL_MS);
     
     return () => clearInterval(interval);
-  }, [userPosition, eta]);
+  }, [userPosition, lastEta]);
 
   return (
     <div className="fixed inset-0 bg-background z-50">
