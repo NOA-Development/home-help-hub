@@ -124,7 +124,7 @@ const calculatedEta = Math.max(1, Math.ceil(distanceInMeters / speedMetersPerMin
 
 ### 5. Playwright Screenshots
 
-#### Script: `take-screenshots.ts`
+#### Script: `utils/take-screenshots.ts`
 Automated screenshot capture demonstrating all features:
 1. Address input screen
 2. Address input with map
@@ -197,9 +197,9 @@ Automated screenshot capture demonstrating all features:
 - `src/components/LeafletMapView.tsx` - Main map component
 - `src/components/CallDialog.tsx` - Call interface
 - `src/components/MessageDialog.tsx` - Chat interface
-- `take-screenshots.ts` - Playwright screenshot automation
-- `screenshots/*.png` - 11 demonstration screenshots
-- `screenshots/README.md` - Screenshot documentation
+- `utils/take-screenshots.ts` - Playwright screenshot automation
+- `docs/screenshots/*.png` - 11 demonstration screenshots
+- `docs/screenshots/README.md` - Screenshot documentation
 
 ### Modified Files
 - `package.json` - Updated dependencies

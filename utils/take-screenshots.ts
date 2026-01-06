@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 import * as path from 'path';
 import * as fs from 'fs';
 
-const screenshotsDir = path.join(process.cwd(), 'screenshots');
+const screenshotsDir = path.join(process.cwd(), 'docs', 'screenshots');
 
 // Create screenshots directory if it doesn't exist
 if (!fs.existsSync(screenshotsDir)) {
